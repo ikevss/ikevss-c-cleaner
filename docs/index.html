@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ikevss C盘清理 — 把 C 盘的呼吸空间还给你</title>
+<meta name="description" content="纯 Windows 只读磁盘分析工具。三灯分级、一键安全清理，删掉的都能从回收站找回来。">
+<style>
+  :root{
+    --ink:#1a1a2e;
+    --sub:#6b7280;
+    --orange:#F97316;
+    --orange-soft:rgba(249,115,22,.14);
+    --green:#16a34a;
+    --amber:#d97706;
+    --red:#dc2626;
+    --paper:#fff7ed;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.6;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ── 背景：漂浮的暖色渐变（玻璃需要真实背景） ── */
+  .backdrop{position:fixed;inset:0;z-index:-2;
+    background:
+      radial-gradient(600px 500px at 12% 8%, rgba(251,191,36,.55), transparent 60%),
+      radial-gradient(700px 600px at 88% 18%, rgba(249,115,22,.45), transparent 60%),
+      radial-gradient(800px 700px at 70% 92%, rgba(254,215,170,.6), transparent 60%),
+      radial-gradient(500px 500px at 20% 85%, rgba(253,186,116,.5), transparent 60%),
+      linear-gradient(160deg,#fff7ed 0%,#ffedd5 100%);
+  }
+  .blob{position:fixed;border-radius:50%;filter:blur(60px);z-index:-1;opacity:.5;
+    animation:drift 18s ease-in-out infinite alternate;}
+  .blob.a{width:420px;height:420px;background:#fdba74;top:-120px;left:-100px;}
+  .blob.b{width:360px;height:360px;background:#fb923c;bottom:-100px;right:-80px;animation-delay:-6s}
+  .blob.c{width:300px;height:300px;background:#fde68a;top:40%;left:55%;animation-delay:-12s}
+  @keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(50px,-40px) scale(1.12)}}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* ── 顶部导航（玻璃） ── */
+  header{position:sticky;top:16px;z-index:50}
+  .nav{
+    display:flex;align-items:center;gap:14px;
+    background:rgba(255,255,255,.35);
+    backdrop-filter:blur(16px) saturate(160%);
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    border:1px solid rgba(255,255,255,.5);
+    border-radius:16px;
+    padding:10px 18px;
+    box-shadow:0 8px 32px rgba(154,52,18,.12), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .nav .logo{font-weight:700;font-size:15px;letter-spacing:-.02em}
+  .nav .logo span{color:var(--orange)}
+  .nav .links{margin-left:auto;display:flex;gap:4px}
+  .nav a{color:var(--sub);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:background .25s,color .25s}
+  .nav a:hover{background:var(--orange-soft);color:var(--ink)}
+
+  /* ── 首屏：左文右图，不要居中三件套 ── */
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;
+    padding:72px 0 64px;}
+  .kicker{display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--orange);
+    background:var(--orange-soft);border:1px solid rgba(249,115,22,.3);
+    padding:5px 12px;border-radius:999px;margin-bottom:20px;}
+  .kicker::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--orange);
+    animation:pulse 2s ease infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  h1{font-size:clamp(34px,4.6vw,54px);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:18px}
+  h1 em{font-style:normal;color:var(--orange)}
+  .hero p.lead{font-size:17px;color:var(--sub);max-width:46ch;margin-bottom:30px}
+
+  .cta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;
+    font-size:15px;padding:13px 26px;border-radius:14px;
+    transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s,background .3s}
+  .btn.primary{background:var(--orange);color:#fff;
+    box-shadow:0 10px 30px rgba(249,115,22,.4), inset 0 1px 0 rgba(255,255,255,.4)}
+  .btn.primary:hover{transform:translateY(-3px);background:#ea6a0a;box-shadow:0 16px 40px rgba(249,115,22,.5)}
+  .btn.ghost{color:var(--ink);border:1.5px solid rgba(26,26,46,.2);background:rgba(255,255,255,.4)}
+  .btn.ghost:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-3px)}
+  .meta-line{margin-top:18px;font-size:12px;color:var(--sub)}
+  .meta-line code{font-family:"SF Mono","Cascadia Code",monospace;font-size:11px;
+    background:rgba(255,255,255,.6);padding:2px 7px;border-radius:6px;border:1px solid rgba(26,26,46,.1)}
+
+  /* ── 右侧：液态玻璃里的动态磁盘仪表 ── */
+  .meter-panel{
+    position:relative;
+    background:rgba(255,255,255,.28);
+    backdrop-filter:blur(20px) saturate(170%);
+    -webkit-backdrop-filter:blur(20px) saturate(170%);
+    border:1px solid rgba(255,255,255,.55);
+    border-radius:24px;
+    padding:28px;
+    box-shadow:0 20px 60px rgba(154,52,18,.18),
+      inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(154,52,18,.06);
+    animation:float 6s ease-in-out infinite;
+  }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .meter-panel::before{content:"";position:absolute;inset:0;border-radius:24px;pointer-events:none;
+    background:linear-gradient(115deg,rgba(255,255,255,.5) 0%,transparent 40%);}
+  .meter-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
+  .meter-head .t{font-size:13px;font-weight:600;color:var(--sub)}
+  .meter-head .free{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .meter-head .free b{color:var(--green);font-size:26px}
+  .bar{height:34px;border-radius:17px;background:rgba(255,255,255,.7);
+    display:flex;overflow:hidden;box-shadow:inset 0 2px 6px rgba(154,52,18,.1)}
+  .bar span{display:block;height:100%;animation:fill 1.8s cubic-bezier(.16,1,.3,1) forwards}
+  .bar .used{width:91%;background:repeating-linear-gradient(45deg,#fca5a5,#fca5a5 8px,#fecaca 8px,#fecaca 16px)}
+  @keyframes fill{from{width:0}}
+  .free-tip{margin-top:16px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub)}
+  .free-tip .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .scanline{margin-top:14px;font-family:"SF Mono",monospace;font-size:11px;color:var(--orange);
+    height:16px;overflow:hidden;white-space:nowrap}
+  .scanline::after{content:"";display:inline-block}
+
+  /* ── 三灯分级：不对称卡片，绿卡放大突出 ── */
+  .tiers{padding:56px 0 40px}
+  .sec-label{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--orange);margin-bottom:10px}
+  h2{font-size:clamp(26px,3.2vw,36px);font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
+  .tiers .intro{color:var(--sub);max-width:52ch;margin-bottom:36px}
+  .tier-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:18px;align-items:stretch}
+  .tier{
+    background:rgba(255,255,255,.55);
+    backdrop-filter:blur(14px) saturate(150%);
+    -webkit-backdrop-filter:blur(14px) saturate(150%);
+    border:1px solid rgba(255,255,255,.6);
+    border-radius:20px;padding:26px;position:relative;overflow:hidden;
+    box-shadow:0 10px 32px rgba(154,52,18,.1);
+    transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s,background .4s;
+  }
+  .tier:hover{transform:translateY(-6px);box-shadow:0 20px 48px rgba(154,52,18,.18);background:rgba(255,255,255,.75)}
+  .tier .lamp{width:14px;height:14px;border-radius:50%;margin-bottom:14px}
+  .tier h3{font-size:17px;font-weight:700;margin-bottom:8px}
+  .tier p{font-size:13.5px;color:var(--sub);margin-bottom:14px}
+  .tier .examples{display:flex;flex-wrap:wrap;gap:6px}
+  .tier .examples span{font-size:11.5px;padding:4px 10px;border-radius:999px;
+    background:rgba(255,255,255,.7);border:1px solid rgba(26,26,46,.08);color:var(--sub)}
+  .tier.green{border-left:4px solid var(--green)}
+  .tier.green .lamp{background:var(--green);box-shadow:0 0 0 4px rgba(22,163,74,.15)}
+  .tier.amber{border-left:4px solid var(--amber)}
+  .tier.amber .lamp{background:var(--amber);box-shadow:0 0 0 4px rgba(217,119,6,.15)}
+  .tier.red{border-left:4px solid var(--red)}
+  .tier.red .lamp{background:var(--red);box-shadow:0 0 0 4px rgba(220,38,38,.15)}
+
+  /* ── 三步流程：竖排编号时间线 ── */
+  .steps{padding:56px 0}
+  .step-list{list-style:none;margin-top:36px;position:relative;padding-left:8px}
+  .step-list::before{content:"";position:absolute;left:27px;top:12px;bottom:12px;width:2px;
+    background:linear-gradient(var(--orange),rgba(249,115,22,.15))}
+  .step{display:flex;gap:26px;margin-bottom:34px;position:relative;
+    opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1)}
+  .step.on{opacity:1;transform:none}
+  .step .num{flex-shrink:0;width:40px;height:40px;border-radius:50%;
+    background:var(--orange);color:#fff;font-weight:800;font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 20px rgba(249,115,22,.4);position:relative;z-index:1}
+  .step h3{font-size:18px;font-weight:700;margin-bottom:6px}
+  .step p{color:var(--sub);font-size:14.5px;max-width:56ch}
+  .step .tag{display:inline-block;font-size:11px;font-weight:600;color:var(--orange);
+    background:var(--orange-soft);padding:2px 9px;border-radius:999px;margin-left:8px;vertical-align:2px}
+
+  /* ── 插画区 ── */
+  .illust{padding:56px 0 20px}
+  .illust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+  .illust-card{
+    background:rgba(255,255,255,.6);
+    backdrop-filter:blur(12px) saturate(150%);
+    -webkit-backdrop-filter:blur(12px) saturate(150%);
+    border:1px solid rgba(255,255,255,.6);
+    border-radius:20px;padding:22px;text-align:center;
+    box-shadow:0 10px 32px rgba(154,52,18,.1);
+    transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s}
+  .illust-card:hover{transform:translateY(-8px) rotate(-1deg);box-shadow:0 22px 50px rgba(154,52,18,.2)}
+  .illust-card img{width:100%;max-width:170px;margin:0 auto 14px;display:block}
+  .illust-card .cap{font-size:13.5px;font-weight:600;color:var(--ink)}
+  .illust-card .sub{font-size:12px;color:var(--sub);margin-top:4px}
+
+  /* ── 安全承诺 ── */
+  .safe{padding:56px 0 72px}
+  .safe-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:36px}
+  .safe-item{
+    display:flex;gap:16px;align-items:flex-start;
+    background:rgba(255,255,255,.55);
+    backdrop-filter:blur(12px) saturate(150%);
+    -webkit-backdrop-filter:blur(12px) saturate(150%);
+    border:1px solid rgba(255,255,255,.6);
+    border-radius:18px;padding:22px;
+    box-shadow:0 8px 28px rgba(154,52,18,.08);
+    transition:transform .35s,box-shadow .35s}
+  .safe-item:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(154,52,18,.14)}
+  .safe-item .ic{flex-shrink:0;width:40px;height:40px;border-radius:12px;
+    background:var(--orange-soft);display:flex;align-items:center;justify-content:center}
+  .safe-item h3{font-size:15.5px;font-weight:700;margin-bottom:5px}
+  .safe-item p{font-size:13.5px;color:var(--sub)}
+
+  footer{padding:40px 0;border-top:1px solid rgba(26,26,46,.08);margin-top:20px}
+  .foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--sub)}
+  .foot a{color:var(--orange);text-decoration:none;font-weight:600}
+  .foot a:hover{text-decoration:underline}
+
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr;gap:40px;padding-top:48px}
+    .tier-grid{grid-template-columns:1fr}
+    .illust-grid{grid-template-columns:1fr}
+    .safe-grid{grid-template-columns:1fr}
+    .nav .links{display:none}
+  }
+
+  /* ── 可访问性：降低动效 / 降低透明度 ── */
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    html{scroll-behavior:auto}
+    .step{opacity:1;transform:none}
+  }
+  @media (prefers-reduced-transparency:reduce){
+    .nav,.meter-panel,.tier,.illust-card,.safe-item{
+      background:rgba(255,251,245,.96);backdrop-filter:none;-webkit-backdrop-filter:none}
+  }
+  @supports not (backdrop-filter:blur(1px)){
+    .nav,.meter-panel,.tier,.illust-card,.safe-item{background:rgba(255,251,245,.95)}
+  }
+</style>
+</head>
+<body>
+
+<!-- 背景光斑 -->
+<div class="backdrop" aria-hidden="true"></div>
+<div class="blob a" aria-hidden="true"></div>
+<div class="blob b" aria-hidden="true"></div>
+<div class="blob c" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <!-- 导航 -->
+  <header>
+    <nav class="nav" aria-label="主导航">
+      <div class="logo">ikevss<span> · </span>C盘清理</div>
+      <div class="links">
+        <a href="#tiers">三灯分级</a>
+        <a href="#steps">怎么用</a>
+        <a href="#safe">安全承诺</a>
+        <a href="https://github.com/ikevss/ikevss-c-cleaner">GitHub ↗</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- 首屏 -->
+  <section class="hero">
+    <div>
+      <div class="kicker">Windows 10 / 11 · 免费开源</div>
+      <h1>C 盘又红了？<br>让 AI 帮你<em>看得清、扫得净</em></h1>
+      <p class="lead">电脑越用越卡，C 盘越装越满，却不知道空间都被谁吃了。这个工具会先「看」清楚每一块空间去了哪里，再告诉你哪些能删、哪些别碰——删掉的，都能从回收站找回来。</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/ikevss/ikevss-c-cleaner#快速开始">开始清理 →</a>
+        <a class="btn ghost" href="https://github.com/ikevss/ikevss-c-cleaner">看源码</a>
+      </div>
+      <div class="meta-line">装好后对 AI 说一句 <code>帮我清理 C 盘</code> 即可 · 零依赖 · 只读扫描</div>
+    </div>
+
+    <!-- 液态玻璃磁盘仪表 -->
+    <div class="meter-panel" aria-label="磁盘空间演示">
+      <div class="meter-head">
+        <span class="t">系统盘 C:\</span>
+        <span class="free">剩余 <b id="free-num">20.4</b> GB</span>
+      </div>
+      <div class="bar" role="img" aria-label="C盘占用 91%，剩余 9%">
+        <span class="used" id="used-seg" title="已用 207.8 GB"></span>
+      </div>
+      <div class="free-tip">
+        <span class="dot" style="background:var(--green)"></span>
+        可自动清理 <b style="color:var(--green)">&nbsp;约 30 GB</b>&nbsp;·&nbsp;
+        <span class="dot" style="background:var(--amber)"></span> 需判断 39 GB
+      </div>
+      <div class="scanline" id="scanline">正在扫描 AppData…</div>
+    </div>
+  </section>
+
+  <!-- 三灯分级 -->
+  <section class="tiers" id="tiers">
+    <div class="sec-label">三灯分级</div>
+    <h2>不是所有东西都能删——我们会替你分辨</h2>
+    <p class="intro">扫描完成后，每一项空间占用都会被分到三种颜色之一。绿色放心清，黄色想一想，红色别手碰。你只需要对绿色点一下。</p>
+    <div class="tier-grid">
+      <div class="tier green">
+        <div class="lamp"></div>
+        <h3>🟢 可自动清理</h3>
+        <p>纯缓存、临时文件、更新残留——删了不影响任何功能，还能随时从回收站找回。</p>
+        <div class="examples">
+          <span>浏览器缓存</span><span>各应用更新残留</span><span>临时文件</span><span>pip / npm 缓存</span>
+        </div>
+      </div>
+      <div class="tier amber">
+        <div class="lamp"></div>
+        <h3>🟡 需人工判断</h3>
+        <p>可能包含你的聊天记录、文档、设计文件。我们会告诉你里面是什么、怎么清最安全。</p>
+        <div class="examples">
+          <span>微信 / 钉钉数据</span><span>下载文件夹</span><span>WPS 模板</span>
+        </div>
+      </div>
+      <div class="tier red">
+        <div class="lamp"></div>
+        <h3>🔴 建议卸载</h3>
+        <p>大应用不能直接删文件，要走正规卸载流程。我们会给你具体的卸载步骤。</p>
+        <div class="examples">
+          <span>不用的大型软件</span><span>系统组件</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 三步流程 -->
+  <section class="steps" id="steps">
+    <div class="sec-label">怎么用</div>
+    <h2>三句话的事</h2>
+    <ol class="step-list">
+      <li class="step">
+        <div class="num">1</div>
+        <div>
+          <h3>说一句话 <span class="tag">触发</span></h3>
+          <p>对 AI 助手说「帮我清理 C 盘」或「C 盘满了」。它会自动扫描你的磁盘，大约十几秒。</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="num">2</div>
+        <div>
+          <h3>看一眼报告 <span class="tag">三灯分级</span></h3>
+          <p>浏览器打开一份清晰的报告：空间去哪了、哪些能删、能释放多少 GB，一目了然。</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="num">3</div>
+        <div>
+          <h3>点一下清理 <span class="tag">一键安全</span></h3>
+          <p>绿色项一键清进回收站，实时看到进度和释放了多少空间。反悔了？回收站里都能找回来。</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- 插画区 -->
+  <section class="illust">
+    <div class="sec-label">一点小心思</div>
+    <h2>清理也可以很治愈</h2>
+    <div class="illust-grid">
+      <div class="illust-card">
+        <img src="assets/illustration-1-disk-sweep.svg" alt="小橙用扫帚打扫硬盘，扫出星星" loading="lazy">
+        <div class="cap">扫走灰尘</div>
+        <div class="sub">红色的 C 盘，扫着扫着就绿了</div>
+      </div>
+      <div class="illust-card">
+        <img src="assets/illustration-2-happy-user.svg" alt="用户对着屏幕比大拇指" loading="lazy">
+        <div class="cap">清完那一刻</div>
+        <div class="sub">释放 20 GB 的快乐，懂的都懂</div>
+      </div>
+      <div class="illust-card">
+        <img src="assets/illustration-3-safe-bin.svg" alt="回收站旁边放着扫帚，打着绿色对勾" loading="lazy">
+        <div class="cap">删了也不怕</div>
+        <div class="sub">都进回收站，随时能找回来</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 安全承诺 -->
+  <section class="safe" id="safe">
+    <div class="sec-label">安全承诺</div>
+    <h2>我们比你更怕删错东西</h2>
+    <div class="safe-grid">
+      <div class="safe-item">
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <h3>扫描全程只读</h3>
+          <p>分析阶段不写、不改、不删任何文件，只是安静地「看」一遍你的磁盘。</p>
+        </div>
+      </div>
+      <div class="safe-item">
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+        </div>
+        <div>
+          <h3>删除先进回收站</h3>
+          <p>默认「移到回收站」而非永久删除，给你留足后悔的余地。</p>
+        </div>
+      </div>
+      <div class="safe-item">
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <div>
+          <h3>动手前必须确认</h3>
+          <p>AI 分级完成后会停下来问你「确认吗」，你不点头，它绝不擅自删除。</p>
+        </div>
+      </div>
+      <div class="safe-item">
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <div>
+          <h3>七层安全校验</h3>
+          <p>删除服务只在本机运行，每一层请求都经过校验，外部网络无法触碰你的文件。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <div>ikevss C盘清理 · 用 ❤ 和一点橙色做的 · MIT 开源</div>
+      <div><a href="https://github.com/ikevss/ikevss-c-cleaner">GitHub</a> · <a href="https://github.com/ikevss/ikevss-c-cleaner/issues">反馈问题</a></div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // ── 滚动显现 ──
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('on');
+  }), {threshold:.2});
+  document.querySelectorAll('.step').forEach(el => io.observe(el));
+
+  // ── 磁盘仪表：模拟"清理中 → 空间释放"循环动画 ──
+  const used = document.getElementById('used-seg');
+  const freeNum = document.getElementById('free-num');
+  const scanline = document.getElementById('scanline');
+  const scanTexts = ['正在扫描 AppData…','发现 15 个更新缓存…','识别可清理项…','生成三灯报告…'];
+  let si = 0;
+  let cleaning = false;
+
+  setInterval(() => {
+    scanline.textContent = scanTexts[si++ % scanTexts.length];
+  }, 2200);
+
+  // 每 8 秒演示一次"清理释放 30GB"
+  function demoClean(){
+    if (cleaning) return;
+    cleaning = true;
+    scanline.textContent = '一键清理绿色项中…';
+    let pct = 91;
+    const timer = setInterval(() => {
+      pct -= 1.2;
+      if (pct <= 78) {
+        pct = 78; clearInterval(timer);
+        scanline.textContent = '✓ 已释放约 30 GB';
+        freeNum.textContent = (228.2 * (100-pct)/100).toFixed(1);
+        setTimeout(() => {
+          // 恢复
+          pct = 78;
+          const t2 = setInterval(() => {
+            pct += 1.2;
+            if (pct >= 91) { pct = 91; clearInterval(t2); cleaning = false; scanline.textContent = scanTexts[0]; }
+            used.style.width = pct + '%';
+            freeNum.textContent = (228.2 * (100-pct)/100).toFixed(1);
+          }, 40);
+        }, 3200);
+      }
+      used.style.width = pct + '%';
+      freeNum.textContent = (228.2 * (100-pct)/100).toFixed(1);
+    }, 45);
+  }
+  setTimeout(demoClean, 3500);
+  setInterval(demoClean, 9000);
+
+  // ── 冻结调试：?t=N 暂停所有动画到 N 秒 ──
+  const p = new URLSearchParams(location.search);
+  const t = p.get('t');
+  if (t !== null) {
+    document.getAnimations().forEach(a => { a.currentTime = parseFloat(t)*1000; a.pause(); });
+  }
+  window.__ready = true;
+</script>
+</body>
+</html>

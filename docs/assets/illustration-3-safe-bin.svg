@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#ffffff"/>
+
+  <!-- 回收站：梯形垃圾桶，巨大 -->
+  <path d="M 62 62 L 58 150 Q 58 156 64 156 L 128 156 Q 134 156 134 150 L 130 62 Z" fill="#ffffff" stroke="#1f2937" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 桶盖 -->
+  <path d="M 56 62 L 136 62" stroke="#1f2937" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M 88 62 L 88 54 Q 96 50 104 54 L 104 62" fill="#ffffff" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
+  <!-- 桶身竖纹 -->
+  <line x1="80" y1="72" x2="78" y2="146" stroke="#1f2937" stroke-width="1.4" stroke-linecap="round"/>
+  <line x1="96" y1="72" x2="96" y2="146" stroke="#1f2937" stroke-width="1.4" stroke-linecap="round"/>
+  <line x1="112" y1="72" x2="114" y2="146" stroke="#1f2937" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- 绿色安全对勾 -->
+  <circle cx="96" cy="106" r="13" fill="none" stroke="#22c55e" stroke-width="2.2"/>
+  <path d="M 90 106 L 94 110 L 103 101" fill="none" stroke="#22c55e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 小扫帚靠在垃圾桶右边 -->
+  <line x1="150" y1="76" x2="142" y2="138" stroke="#1f2937" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- 扫帚头（橙色点缀） -->
+  <path d="M 136 138 L 150 138 L 146 156 L 140 156 Z" fill="#F97316"/>
+  <line x1="136" y1="138" x2="150" y2="138" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- 干净的小星星 -->
+  <path d="M 44 44 L 46 39 L 48 44 L 53 46 L 48 48 L 46 53 L 44 48 L 39 46 Z" fill="#F97316"/>
+  <circle cx="146" cy="60" r="2.4" fill="#F97316"/>
+  <circle cx="156" cy="100" r="2" fill="#F97316"/>
+  <path d="M 36 120 L 38 115 L 40 120 L 45 122 L 40 124 L 38 129 L 36 124 L 31 122 Z" fill="#F97316"/>
+  <circle cx="140" cy="128" r="2.4" fill="#F97316"/>
+
+  <!-- 地面线 -->
+  <line x1="30" y1="156" x2="170" y2="156" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- 签名 -->
+  <line x1="14" y1="190" x2="24" y2="190" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
+  <text x="14" y="199" font-family="sans-serif" font-size="6.5" fill="#9ca3af">删掉的都能找回来，放心</text>
+</svg>
