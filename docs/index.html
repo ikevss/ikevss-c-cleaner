@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="assets/icon-app.svg">
 <title>ikevss C盘清理 — 把 C 盘的呼吸空间还给你</title>
 <meta name="description" content="纯 Windows 只读磁盘分析工具。三灯分级、一键安全清理，删掉的都能从回收站找回来。">
 <style>
@@ -57,8 +58,12 @@
     padding:10px 18px;
     box-shadow:0 8px 32px rgba(154,52,18,.12), inset 0 1px 0 rgba(255,255,255,.6);
   }
-  .nav .logo{font-weight:700;font-size:15px;letter-spacing:-.02em}
+  .nav .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-.02em;
+    color:var(--ink);text-decoration:none;cursor:pointer}
   .nav .logo span{color:var(--orange)}
+  .logo-icon{border-radius:8px;box-shadow:0 4px 14px rgba(249,115,22,.4);flex-shrink:0;
+    transition:transform .35s cubic-bezier(.16,1,.3,1)}
+  .nav .logo:hover .logo-icon{transform:rotate(-10deg) scale(1.1)}
   .nav .links{margin-left:auto;display:flex;gap:4px}
   .nav a{color:var(--sub);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:background .25s,color .25s}
   .nav a:hover{background:var(--orange-soft);color:var(--ink)}
@@ -243,7 +248,10 @@
   <!-- 导航 -->
   <header>
     <nav class="nav" aria-label="主导航">
-      <div class="logo">ikevss<span> · </span>C盘清理</div>
+      <a class="logo" href="#" aria-label="ikevss C盘清理">
+        <img class="logo-icon" src="assets/icon-app.svg" width="30" height="30" alt="">
+        ikevss<span> · </span>C盘清理
+      </a>
       <div class="links">
         <a href="#tiers">三灯分级</a>
         <a href="#steps">怎么用</a>
@@ -415,7 +423,7 @@
 
   <footer>
     <div class="foot">
-      <div>ikevss C盘清理 · 用 ❤ 和一点橙色做的 · MIT 开源</div>
+      <div class="foot-brand"><img src="assets/icon-app.svg" width="20" height="20" alt="" style="border-radius:5px;vertical-align:-4px"> ikevss C盘清理 · 用 ❤ 和一点橙色做的 · MIT 开源</div>
       <div><a href="https://github.com/ikevss/ikevss-c-cleaner">GitHub</a> · <a href="https://github.com/ikevss/ikevss-c-cleaner/issues">反馈问题</a></div>
     </div>
   </footer>
