@@ -294,18 +294,7 @@
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .item-card { animation: fadeInUp 0.3s ease backwards; }
-  .item-card:nth-child(1) { animation-delay: 0.02s; }
-  .item-card:nth-child(2) { animation-delay: 0.04s; }
-  .item-card:nth-child(3) { animation-delay: 0.06s; }
-  .item-card:nth-child(4) { animation-delay: 0.08s; }
-  .item-card:nth-child(5) { animation-delay: 0.10s; }
-  .item-card:nth-child(6) { animation-delay: 0.12s; }
-  .item-card:nth-child(7) { animation-delay: 0.14s; }
-  .item-card:nth-child(8) { animation-delay: 0.16s; }
-  .item-card:nth-child(9) { animation-delay: 0.18s; }
-  .item-card:nth-child(10) { animation-delay: 0.20s; }
-  .item-card:nth-child(n+11) { animation-delay: 0.22s; }
+  .item-card { animation: fadeInUp 0.2s ease backwards; }
 </style>
 </head>
 <body>
@@ -547,7 +536,7 @@ function renderGreenItem(it, idx) {
 
   return '<div class="item-card green" id="green-'+idx+'" data-green-idx="'+idx+'">'+
     '<div class="item-head" tabindex="0" role="button" aria-expanded="false" onclick="this.parentElement.classList.toggle(\'open\');this.setAttribute(\'aria-expanded\',this.parentElement.classList.contains(\'open\'))" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}">'+
-    '<span class="item-icon">◆</span>'+
+    '<span class="item-icon" aria-hidden="true">◆</span>'+
     '<div class="item-info"><div class="item-title">'+esc(it.name)+'</div><div class="item-path">'+esc(it.path)+'</div></div>'+
     '<span class="item-size">'+esc(it.size_estimate)+'</span>'+
     '<span class="item-chevron" aria-hidden="true">▶</span></div>'+
@@ -561,7 +550,7 @@ function renderGreenActions(it) {
   if (!DELETE || !it.trash_paths || !it.trash_paths.length) return '';
   var payload = encodePaths(it.trash_paths);
   return '<div class="action-row" data-paths="'+payload+'">'+
-    '<button class="btn btn-success btn-sm" onclick="event.stopPropagation();doDelete(this,\'trash\')">移到废纸篓</button>'+
+    '<button class="btn btn-success btn-sm" onclick="event.stopPropagation();doDelete(this,\'trash\')">移到回收站</button>'+
     '<span class="del-status"></span></div>';
 }
 
@@ -570,7 +559,7 @@ function renderAmberItem(it, idx) {
   if (it.trash_paths && it.trash_paths.length && DELETE) {
     var payload = encodePaths(it.trash_paths);
     trashBtns = '<div class="action-row" data-paths="'+payload+'">'+
-      '<button class="btn btn-amber btn-sm" onclick="event.stopPropagation();doDelete(this,\'trash\')">移到废纸篓（安全子路径）</button>'+
+      '<button class="btn btn-amber btn-sm" onclick="event.stopPropagation();doDelete(this,\'trash\')">移到回收站（安全子路径）</button>'+
       '<span class="del-status"></span></div>';
   }
   var openBtn = it.path ? '<div class="action-row"><button class="btn btn-sm" onclick="event.stopPropagation();doOpen(\''+esc(it.path).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')">在资源管理器打开</button></div>' : '';
@@ -634,7 +623,7 @@ function doDelete(btn, mode) {
   var wrap = btn.closest('.action-row');
   var status = wrap.querySelector('.del-status');
   var paths = decodePaths(wrap.dataset.paths);
-  var verb = mode==='rm' ? '直接删除（不可恢复）' : '移到废纸篓（可逆）';
+  var verb = mode==='rm' ? '直接删除（不可恢复）' : '移到回收站（可逆）';
   if (!confirm('确认'+verb+'以下 '+paths.length+' 个路径？\n\n'+paths.join('\n'))) return;
   status.textContent = '处理中…';
   fetch(DELETE.endpoint, {method:'POST', headers:{'Content-Type':'application/json'},
@@ -718,7 +707,7 @@ function openBatchModal() {
   // 底部按钮
   document.getElementById('batch-footer-btns').innerHTML =
     '<button class="btn" onclick="closeBatchModal()" id="batch-btn-cancel" aria-label="取消">取消</button>' +
-    '<button class="btn success btn-lg" onclick="executeBatchClean(\'trash\')" id="batch-btn-trash" aria-label="确认移到废纸篓">&#128465; 确认移到废纸篓</button>' +
+    '<button class="btn success btn-lg" onclick="executeBatchClean(\'trash\')" id="batch-btn-trash" aria-label="确认移到回收站">&#128465; 确认移到回收站</button>' +
     '<button class="btn danger" onclick="executeBatchClean(\'rm\')" id="batch-btn-rm" style="display:none" aria-label="直接删除">直接删除</button>';
 
   // 显示/隐藏"直接删除"按钮的小切换
@@ -759,7 +748,7 @@ async function executeBatchClean(mode) {
 
   if (!selected.length) { alert('请至少选择一项'); return; }
 
-  var verb = mode === 'rm' ? '直接删除' : '移到废纸篓';
+  var verb = mode === 'rm' ? '直接删除' : '移到回收站';
   var total = selected.length;
   var okCount = 0;
   var failCount = 0;
