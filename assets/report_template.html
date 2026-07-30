@@ -328,7 +328,7 @@
 </div>
 
 <!-- 一键清理确认面板 -->
-<div class="modal-overlay" id="batch-modal">
+<div class="modal-overlay" id="batch-modal" role="dialog" aria-modal="true" aria-labelledby="batch-modal-title">
   <div class="modal">
     <div class="modal-header">
       <h3 id="batch-modal-title">确认清理</h3>
@@ -707,7 +707,7 @@ function openBatchModal() {
   });
 
   // 进度条（初始隐藏）
-  bodyHtml += '<div class="progress-bar" id="batch-progress-bar" style="display:none">' +
+  bodyHtml += '<div class="progress-bar" id="batch-progress-bar" style="display:none" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
     '<div class="progress-fill" id="batch-progress-fill"></div></div>';
   bodyHtml += '<span class="progress-text" id="batch-progress-detail"></span>';
   // 结果摘要区域
@@ -795,7 +795,8 @@ async function executeBatchClean(mode) {
     var cardEl = document.getElementById('green-' + it.idx);
 
     // 更新进度
-    progressFill.style.width = ((i / total) * 100) + '%';
+    progressFill.style.width = pct + '%';
+    progressBar.setAttribute('aria-valuenow', pct);
     progressDetail.textContent = verb + '中… ' + (i + 1) + '/' + total;
 
     // 标记正在清理
