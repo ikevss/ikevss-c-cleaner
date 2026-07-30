@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ikevss C盘清理报告</title>
-/* ikevss C盘清理 · 工具界面 · 克制、干净、直接的 PC 桌面报告 */
+<!-- ikevss C盘清理 · 工具界面 · 克制、干净、直接的 PC 桌面报告 -->
 <style>
   :root {
     --ink: #1a1a2e;
     --sub: #6b7280;
-    --muted: #8b8fa3;
+    --muted: #71717a;
     --line: #e5e7eb;
     --surface: #f6f7f9;
     --bg: #ffffff;
@@ -25,7 +25,7 @@
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, "SF Pro SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    font-family: "SF Pro Display", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
     background: #f4f5f7; color: var(--ink); font-size: 14px; line-height: 1.55;
     -webkit-font-smoothing: antialiased; min-height: 100vh;
   }
@@ -186,7 +186,7 @@
   .cmd-label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
   .action-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
   .warn-banner {
-    background: #fffbeb; border-left: 4px solid var(--amber);
+    background: var(--amber-bg); border-left: 4px solid var(--amber);
     padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: #92400e;
   }
   .warn-banner strong { color: #78350f; }
@@ -285,7 +285,9 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
+      animation-delay: 0s !important;
       transition-duration: 0.01ms !important;
+      transition-delay: 0s !important;
     }
   }
   @keyframes fadeInUp {
@@ -320,7 +322,7 @@
       <a href="#red" data-section="red" aria-label="建议卸载"><span class="dot" style="background:var(--red)"></span> 建议卸载 <span class="count" id="nav-red-count"></span></a>
       <a href="#summary" data-section="summary" aria-label="总结建议">&#9733; 总结建议</a>
     </nav>
-    <div class="sb-footer">ikevss-c-cleaner · 只读分析</div>
+    <div class="sb-footer">ikevss-c-cleaner</div>
   </aside>
   <main class="main" id="app-root"></main>
 </div>
@@ -545,10 +547,10 @@ function renderGreenItem(it, idx) {
 
   return '<div class="item-card green" id="green-'+idx+'" data-green-idx="'+idx+'">'+
     '<div class="item-head" tabindex="0" role="button" aria-expanded="false" onclick="this.parentElement.classList.toggle(\'open\');this.setAttribute(\'aria-expanded\',this.parentElement.classList.contains(\'open\'))" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}">'+
-    '<span class="item-icon">&#9678;</span>'+
+    '<span class="item-icon">◆</span>'+
     '<div class="item-info"><div class="item-title">'+esc(it.name)+'</div><div class="item-path">'+esc(it.path)+'</div></div>'+
     '<span class="item-size">'+esc(it.size_estimate)+'</span>'+
-    '<span class="item-chevron">&#9654;</span></div>'+
+    '<span class="item-chevron" aria-hidden="true">▶</span></div>'+
     '<div class="item-body">'+procs+
     '<div class="item-field"><div class="item-field-label">清理命令</div>'+cmds+'</div>'+
     (it.trash_paths&&it.trash_paths.length?renderGreenActions(it):'')+
@@ -560,7 +562,6 @@ function renderGreenActions(it) {
   var payload = encodePaths(it.trash_paths);
   return '<div class="action-row" data-paths="'+payload+'">'+
     '<button class="btn btn-success btn-sm" onclick="event.stopPropagation();doDelete(this,\'trash\')">移到废纸篓</button>'+
-    '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();doDelete(this,\'rm\')">直接删除</button>'+
     '<span class="del-status"></span></div>';
 }
 
@@ -576,10 +577,10 @@ function renderAmberItem(it, idx) {
 
   return '<div class="item-card amber" id="amber-'+idx+'">'+
     '<div class="item-head" tabindex="0" role="button" aria-expanded="false" onclick="this.parentElement.classList.toggle(\'open\');this.setAttribute(\'aria-expanded\',this.parentElement.classList.contains(\'open\'))" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}">'+
-    '<span class="item-icon">&#9671;</span>'+
+    '<span class="item-icon">◇</span>'+
     '<div class="item-info"><div class="item-title">'+esc(it.name)+'</div><div class="item-path">'+esc(it.path)+'</div></div>'+
     '<span class="item-size">'+esc(it.size)+'</span>'+
-    '<span class="item-chevron">&#9654;</span></div>'+
+    '<span class="item-chevron" aria-hidden="true">▶</span></div>'+
     '<div class="item-body">'+
     '<div class="item-field"><div class="item-field-label">内容画像</div><div class="item-field-value">'+esc(it.content_profile)+'</div></div>'+
     '<div class="item-field"><div class="item-field-label">为什么需要人工判断</div><div class="item-field-value">'+esc(it.why_manual)+'</div></div>'+
@@ -596,10 +597,10 @@ function renderRedItem(it, idx) {
 
   return '<div class="item-card red" id="red-'+idx+'">'+
     '<div class="item-head" tabindex="0" role="button" aria-expanded="false" onclick="this.parentElement.classList.toggle(\'open\');this.setAttribute(\'aria-expanded\',this.parentElement.classList.contains(\'open\'))" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}">'+
-    '<span class="item-icon">&#9632;</span>'+
+    '<span class="item-icon">■</span>'+
     '<div class="item-info"><div class="item-title">'+esc(it.name)+'</div><div class="item-path">'+esc(it.path)+'</div></div>'+
     '<span class="item-size">'+esc(it.size)+'</span>'+
-    '<span class="item-chevron">&#9654;</span></div>'+
+    '<span class="item-chevron" aria-hidden="true">▶</span></div>'+
     '<div class="item-body">'+
     '<div class="item-field"><div class="item-field-label">为什么不建议手删</div><div class="item-field-value">'+esc(it.why_keep)+'</div></div>'+
     '<div class="item-field"><div class="item-field-label">卸载释放建议</div><div class="item-field-value">'+esc(it.indirect_release)+'</div></div>'+
@@ -936,7 +937,6 @@ document.addEventListener('keydown', function(e) {
     document.getElementById('app-root').innerHTML =
       (warnings.length ? '<div class="warn-banner"><strong>数据结构提示：</strong><br>'+warnings.join('<br>')+'</div>' : '') +
       renderDiskOverview() +
-      renderTierCards() +
       renderTierCards() +
       renderSection('green','可自动清理',DATA.green,renderGreenItem) +
       renderSection('amber','需人工判断',DATA.yellow,renderAmberItem) +
