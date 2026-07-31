@@ -65,10 +65,10 @@
 
 ### 发给 AI 助手自动安装
 
-把下面这段中文发给你的 AI 助手，它会自动完成安装：
+把下面这段话发给你的 AI 助手：
 
 ```
-帮我在当前设备上安装 ikevss C盘清理 这个 Skill。先读一下 https://ikevss.github.io/ikevss-c-cleaner/SKILL.md 了解完整的安装和配置说明，然后按照步骤帮我装好。
+帮我在 Claude Code 中安装 ikevss-c-cleaner 这个 Skill，用这个命令：npx skills add ikevss/ikevss-c-cleaner
 ```
 
 ### 命令行安装

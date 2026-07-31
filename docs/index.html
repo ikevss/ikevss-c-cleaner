@@ -305,8 +305,8 @@
         </div>
         <div style="flex:1">
           <h3>发给 AI 助手自动安装</h3>
-          <p style="margin-bottom:10px">把下面这段中文发给你的 AI 助手，它会自动完成安装：</p>
-          <div style="background:#1e293b;padding:12px 16px;font-size:13px;color:#e2e8f0;white-space:pre-wrap;overflow-x:auto;line-height:1.8;margin-bottom:6px">帮我在当前设备上安装 ikevss C盘清理 这个 Skill。先读一下 https://ikevss.github.io/ikevss-c-cleaner/SKILL.md 了解完整的安装和配置说明，然后按照步骤帮我装好。</div>
+          <p style="margin-bottom:10px">把下面这段话发给你的 AI 助手，它会自动完成安装：</p>
+          <div style="background:#1e293b;padding:12px 16px;font-size:13px;color:#e2e8f0;white-space:pre-wrap;overflow-x:auto;line-height:1.8;margin-bottom:6px">帮我在 Claude Code 中安装 ikevss-c-cleaner 这个 Skill，用这个命令：npx skills add ikevss/ikevss-c-cleaner</div>
           <button class="btn btn-sm" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('div').textContent);this.textContent='已复制 ✓';setTimeout(()=>this.textContent='复制',1500)" style="font-size:11px">复制这段话</button>
         </div>
       </div>
