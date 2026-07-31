@@ -63,23 +63,23 @@
 
 两种方式，任选一种。
 
-### 🤖 我是 Agent — 让 AI 帮你装
+### 发给 AI 助手自动安装
 
-把下面这段话发给你的 AI 编程助手，它会自动完成安装和配置。
+把下面这段中文发给你的 AI 助手，它会自动完成安装：
 
 ```
-Read https://ikevss.github.io/ikevss-c-cleaner/SKILL.md and follow the instructions to install ikevss C盘清理 on my machine. Install any required dependencies, then verify the installation.
+帮我在当前设备上安装 ikevss C盘清理 这个 Skill。先读一下 https://ikevss.github.io/ikevss-c-cleaner/SKILL.md 了解完整的安装和配置说明，然后按照步骤帮我装好。
 ```
 
-### 🖥️ 我是 Human — 手动安装
+### 命令行安装
 
-在终端执行以下命令：
+在终端执行：
 
 ```bash
 npx skills add ikevss/ikevss-c-cleaner
 ```
 
-或者手动 clone：
+或者手动 clone 整个仓库：
 
 ```bash
 git clone https://github.com/ikevss/ikevss-c-cleaner.git %USERPROFILE%\.claude\skills\ikevss-c-cleaner
