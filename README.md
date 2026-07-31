@@ -61,44 +61,34 @@
 
 ## 安装
 
-共三步。
+两种方式，任选一种。
 
-### 第 1 步：装 Python（已经有就跳过）
+### 🤖 我是 Agent — 让 AI 帮你装
 
-去 [python.org](https://www.python.org/downloads/) 下载安装包，像装普通软件一样装好。装的时候**勾选 "Add Python to PATH"** 那一项。
+把下面这段话发给你的 AI 编程助手，它会自动完成安装和配置。
 
-装完验证一下：打开终端（PowerShell 或 CMD），输入：
-
-```bash
-python --version
+```
+Read https://ikevss.github.io/ikevss-c-cleaner/SKILL.md and follow the instructions to install ikevss C盘清理 on my machine. Install any required dependencies, then verify the installation.
 ```
 
-出现 `Python 3.10.x` 或更高版本就对了。
+### 🖥️ 我是 Human — 手动安装
 
-### 第 2 步：装本 Skill
+在终端执行以下命令：
 
-打开 Claude Code，在底部输入框输入这行，然后按回车：
+```bash
+npx skills add ikevss/ikevss-c-cleaner
+```
+
+或者手动 clone：
 
 ```bash
 git clone https://github.com/ikevss/ikevss-c-cleaner.git %USERPROFILE%\.claude\skills\ikevss-c-cleaner
 ```
 
-> **这是复制粘贴进去的，不是手打的。**
-
-AI 助手会自动识别新安装的 Skill。不需要额外配置。
-
-### 第 3 步：开始用
-
-跟 AI 说一句话就行：
+装好之后，在 Claude Code 里对 AI 说一句就行：
 
 ```
 帮我清理一下 C 盘
-```
-
-或者说：
-
-```
-C 盘满了，看看哪里占了空间
 ```
 
 它会先扫描一遍告诉你有哪些东西，然后生成一份三灯分级的报告在浏览器里打开。**你确认了它才会删。**
