@@ -254,9 +254,9 @@
       </a>
       <div class="links">
         <a href="#tiers">三灯分级</a>
-        <a href="#steps">怎么用</a>
+        <a href="#install">怎么装</a>
         <a href="#safe">安全承诺</a>
-        <a href="https://github.com/ikevss/ikevss-c-cleaner#快速开始">安装方法</a>
+        <a href="https://github.com/ikevss/ikevss-c-cleaner">GitHub</a>
       </div>
     </nav>
   </header>
@@ -264,14 +264,14 @@
   <!-- 首屏 -->
   <section class="hero">
     <div>
-      <div class="kicker">Windows 10 / 11 · 免费开源</div>
-      <h1>装了 Claude Code、OpenCode …<br>C 盘满了？<em>让它帮你看看</em></h1>
-    <p class="lead">这类 AI 开发工具会在 C 盘产生大量缓存——npm / uv / pip / 各应用的更新残留。时间一长，C 盘不知不觉就满了。<strong>这是一个 Claude Code Skill</strong>，装好后对 AI 说句话就会自动扫描、生成报告、帮你清理。</p>
+      <div class="kicker">一个 Claude Code Skill</div>
+      <h1>装了 Claude Code、OpenCode …<br>C 盘满了？<em>说句话就能扫干净</em></h1>
+      <p class="lead">这类 AI 开发工具会在 C 盘悄悄产生几十 GB 缓存——npm / pip / uv / Playwright / 十几个 Electron 应用的更新残留，分布在 AppData 各个角落。你根本不知道去哪找，也不敢乱删。<strong>装这个 Skill，对 AI 说句话就行。</strong></p>
       <div class="cta">
-        <a class="btn primary" href="https://github.com/ikevss/ikevss-c-cleaner#快速开始">开始清理 →</a>
-        <a class="btn ghost" href="https://github.com/ikevss/ikevss-c-cleaner">看源码</a>
+        <a class="btn primary" href="#install">怎么装 →</a>
+        <a class="btn ghost" href="https://github.com/ikevss/ikevss-c-cleaner">GitHub</a>
       </div>
-      <div class="meta-line">装好后对 AI 说一句 <code>帮我清理 C 盘</code> 即可 · 零依赖 · 只读扫描</div>
+      <div class="meta-line">装好后对 AI 说 <code>帮我清理一下 C 盘</code> 即可触发</div>
     </div>
 
     <!-- 液态玻璃磁盘仪表 -->
@@ -285,40 +285,44 @@
       </div>
       <div class="free-tip">
         <span class="dot" style="background:var(--green)"></span>
-        可自动清理 <b style="color:var(--green)">&nbsp;约 30 GB</b>&nbsp;·&nbsp;
+        可自动清理 <b style="color:var(--green)">约 30 GB</b> ·
         <span class="dot" style="background:var(--amber)"></span> 需判断 39 GB
       </div>
       <div class="scanline" id="scanline">正在扫描 AppData…</div>
     </div>
   </section>
 
-  <!-- 安装方式 -->
-  <section class="tiers" id="install">
-    <div class="sec-label">安装方式</div>
-    <h2>这是一个 Claude Code Skill — 装好就能用</h2>
-    <p class="intro">放到 skills 目录下，AI 助手会自动识别。然后你说一句话就能触发。</p>
-    <div class="tier-grid" style="grid-template-columns:1fr 2fr">
-      <div class="tier" style="border-top:3px solid var(--orange)">
-        <div class="lamp" style="background:var(--orange);box-shadow:0 0 0 4px rgba(249,115,22,.15)"></div>
-        <h3>📦 安装</h3>
-        <p>复制到 Claude Code 的技能目录即可，AI 助手自动识别。</p>
-        <div class="examples">
-          <span>git clone</span><span>手动复制</span><span>零依赖</span>
+  <!-- 怎么装 -->
+  <section class="steps" id="install">
+    <div class="sec-label">怎么装</div>
+    <h2>三步，复制粘贴就行</h2>
+    <ol class="step-list">
+      <li class="step">
+        <div class="num">1</div>
+        <div>
+          <h3>装 Python <span class="tag">已有就跳过</span></h3>
+          <p>去 <a href="https://www.python.org/downloads/" style="color:var(--orange)">python.org</a> 下载安装包，像装普通软件一样装好。<strong>勾选 "Add Python to PATH"。</strong>装完打开终端输入 <code style="background:rgba(255,255,255,.6);padding:2px 6px;border-radius:4px;font-size:12px">python --version</code> 验证。</p>
         </div>
-      </div>
-      <div class="tier" style="background:rgba(255,255,255,.65);border-top:3px solid var(--ink)">
-        <h3 style="margin-top:8px">触发提示词</h3>
-        <p style="margin-bottom:4px">安装后，在对话中对 AI 助手说任意一句：</p>
-        <ul style="font-size:13.5px;color:var(--sub);padding-left:18px;margin-bottom:14px;line-height:2">
-          <li><code style="background:rgba(255,255,255,.6);padding:2px 6px;border-radius:4px;font-size:12.5px">帮我清理一下 C 盘</code></li>
-          <li><code style="background:rgba(255,255,255,.6);padding:2px 6px;border-radius:4px;font-size:12.5px">C 盘满了，看看哪里占了空间</code></li>
-          <li><code style="background:rgba(255,255,255,.6);padding:2px 6px;border-radius:4px;font-size:12.5px">分析一下磁盘空间</code></li>
-        </ul>
-        <p style="font-size:13px;color:var(--sub)">
-          AI 助手会自动加载此 Skill，依次扫描 → 分析 → 打开交互式报告。
-        </p>
-      </div>
-    </div>
+      </li>
+      <li class="step">
+        <div class="num">2</div>
+        <div>
+          <h3>装本 Skill <span class="tag">复制粘贴</span></h3>
+          <p>打开终端，输入这行，按回车：</p>
+          <div class="cmd-block" style="margin-top:8px;background:#1e293b;padding:10px 14px;font-size:12px;color:#e2e8f0;font-family:monospace;white-space:pre;overflow-x:auto;">git clone https://github.com/ikevss/ikevss-c-cleaner.git %USERPROFILE%\.claude\skills\ikevss-c-cleaner</div>
+          <p style="margin-top:6px;font-size:12px;color:var(--muted, #71717a)">这是复制粘贴进去的，不是手打的。出现 Done 就装好了。大概等几秒钟。</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="num">3</div>
+        <div>
+          <h3>开始用 <span class="tag">说人话</span></h3>
+          <p>在 Claude Code 里对 AI 说：</p>
+          <p style="margin:8px 0"><code style="background:rgba(255,255,255,.6);padding:4px 10px;border-radius:6px;font-size:13px;border:1px solid rgba(26,26,46,.1)">帮我清理一下 C 盘</code></p>
+          <p style="font-size:12px;color:var(--sub)">它会先扫描一遍告诉你有哪些东西，然后打开一份三灯分级的报告。你确认了它才会删。</p>
+        </div>
+      </li>
+    </ol>
   </section>
 
   <!-- 三灯分级 -->
@@ -352,35 +356,6 @@
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- 三步流程 -->
-  <section class="steps" id="steps">
-    <div class="sec-label">怎么用</div>
-    <h2>三句话的事</h2>
-    <ol class="step-list">
-      <li class="step">
-        <div class="num">1</div>
-        <div>
-          <h3>说一句话 <span class="tag">触发</span></h3>
-          <p>对 AI 助手说「帮我清理 C 盘」或「C 盘满了」。它会自动扫描你的磁盘，大约十几秒。</p>
-        </div>
-      </li>
-      <li class="step">
-        <div class="num">2</div>
-        <div>
-          <h3>看一眼报告 <span class="tag">三灯分级</span></h3>
-          <p>浏览器打开一份清晰的报告：空间去哪了、哪些能删、能释放多少 GB，一目了然。</p>
-        </div>
-      </li>
-      <li class="step">
-        <div class="num">3</div>
-        <div>
-          <h3>点一下清理 <span class="tag">一键安全</span></h3>
-          <p>绿色项一键清进回收站，实时看到进度和释放了多少空间。反悔了？回收站里都能找回来。</p>
-        </div>
-      </li>
-    </ol>
   </section>
 
   <!-- 插画区 -->
