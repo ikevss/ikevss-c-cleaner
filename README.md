@@ -178,3 +178,9 @@ ikevss-c-cleaner/
 ## 许可证
 
 MIT License · Copyright © 2026 ikevss
+
+---
+
+## 联系
+
+📮 联系邮箱：ihuass@agent.qq.com
